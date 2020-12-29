@@ -19,3 +19,7 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+python
+    path('',include('news.urls')),
+python
+    path('', views.HomeworkCreate.as_view()),

@@ -11,3 +11,4 @@ urlpatterns = [
     path('articles/<int:year>/<int:month>/', views.month_archive),
     path('articles/<int:year>/<int:month>/<int:pk>/', views.article_detail),
 ]
+admin.site.register(models.Student)

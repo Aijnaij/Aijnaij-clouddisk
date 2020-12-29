@@ -105,3 +105,62 @@ def year_archive(request, year):
     path('news/', include('news.urls')),
 ```
 上传到仓库
+在`news/models.py`中更改之前的`Report`,`Article`为`Student`,`Homework`
+```python
+from django.db import models
+
+class Student(models.Model):
+    full_name = models.CharField(max_length=70)
+    class Sex(models.IntegerChoices):
+        MALE = 1, ('MALE')
+        FEMALE = 2, ('FEMALE')
+        OTHER = 3, ('OTHER')
+    sex = models.IntegerField(choices=Sex.choices)
+    def __str__(self):
+        return self.full_name
+
+class Homework(models.Model):
+    commit_date = models.DateField(auto_now=True)
+    headline = models.CharField(max_length=200)
+    attach = models.FileField()
+    remark = models.TextField()
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+```
+下一步：新建news/templates/homework_form.html`提交html文件，并添加代码
+```html
+<html>
+<body>
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+</form>
+</body>
+</html>
+```
+更改`news/view.py`文件，添加表格形式
+```python
+from.models import Student, Homework
+
+from django.views.generic.edit import CreateView
+
+class HomeworkCreate(CreateView):
+    model = Homework
+    template_name = 'homework_form.html'
+    fields = ['headline','attach','remark','student']
+```
+下一步：在news/urls.py里头更改访问url
+```python
+urlpatterns = [
+    path('hw/create/', views.HomeworkCreate.as_view()),
+```
+下一步：在news/admin.py后台中添加`Student`用户组
+下一步：进行数据库的再一次迁移
+python .\manage.py makemigrations
+python .\manage.py migrate
+然后：在news/urls.py和clouddisk/urls.py中创建根路径：
+```python
+    path('',include('news.urls')),
+```
+```python
+    path('', views.HomeworkCreate.as_view()),
+```
